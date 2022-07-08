@@ -1,5 +1,5 @@
 import {useState, useEffect, useRef} from 'react';
-const Navbar = () => {
+const Navbar = ({setPage}) => {
     const NavButtons = useRef(null);
     const [extendedNav, setExtendedNav] = useState(false);
     useEffect(() => {
@@ -14,7 +14,7 @@ const Navbar = () => {
         }
     }, [extendedNav]);
     return (
-        <nav className="flex items-center justify-between flex-wrap bg-indigo-600 p-6">
+        <nav className="absolute top-0 left-0 w-full flex items-center justify-between flex-wrap bg-indigo-600 p-6">
             {/* Nav Title */}
             <div className="flex items-center flex-shrink-0 text-white mr-6">
                 <span className="font-semibold text-xl tracking-tight">
@@ -34,16 +34,19 @@ const Navbar = () => {
             <div ref={NavButtons} className="w-full block flex-grow lg:flex lg:items-center lg:w-auto lg:translate-y-0">
                 <div className="text-sm lg:flex-grow">
                     <button
+                        onClick={() => setPage('dashboard')}
                         className="block mt-4 lg:inline-block lg:mt-0 text-indigo-200 hover:text-white mr-4"
                     >
                         Dashboard
                     </button>
                     <button
+                        onClick={() => setPage('sections')}
                         className="block mt-4 lg:inline-block lg:mt-0 text-indigo-200 hover:text-white mr-4"
                     >
                         Sections
                     </button>
                     <button
+                        onClick={() => setPage('photos')}
                         className="block mt-4 lg:inline-block lg:mt-0 text-indigo-200 hover:text-white mr-4"
                     >
                         Photos
