@@ -6,7 +6,7 @@ const Navbar = ({setPage}) => {
     const extended = 'top-full animate-verticalentrance '
     const collapsed = 'bottom-full animate-verticalexit '
     return (
-        <nav className="absolute top-0 left-0 w-full flex items-center justify-between flex-wrap bg-indigo-600 p-6 relative">
+        <nav id='Navbar' className="fixed h-20 top-0 left-0 w-full flex items-center justify-between flex-wrap bg-indigo-600 p-6">
             {/* Nav Title */}
             <div className="flex items-center flex-shrink-0 text-white mr-6">
                 <span className="font-semibold text-xl tracking-tight">
