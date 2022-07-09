@@ -1,20 +1,12 @@
-import {useState, useEffect, useRef} from 'react';
+import {useState, useRef} from 'react';
 const Navbar = ({setPage}) => {
     const NavButtons = useRef(null);
     const [extendedNav, setExtendedNav] = useState(false);
-    useEffect(() => {
-        console.log(extendedNav);
-        if(extendedNav){
-            NavButtons.current.classList.remove('hidden');
-            NavButtons.current.classList.remove('-translate-y-full')
-        }
-        else{
-            NavButtons.current.classList.add('hidden');
-            NavButtons.current.classList.add('-translate-y-full')
-        }
-    }, [extendedNav]);
+    const normalbuttons = ' p-6 pt-0 absolute left-0 w-full block flex-grow lg:p-0 lg:flex lg:items-center lg:w-auto lg:static bg-indigo-600'
+    const extended = 'top-full animate-verticalentrance '
+    const collapsed = 'bottom-full animate-verticalexit '
     return (
-        <nav className="absolute top-0 left-0 w-full flex items-center justify-between flex-wrap bg-indigo-600 p-6">
+        <nav className="absolute top-0 left-0 w-full flex items-center justify-between flex-wrap bg-indigo-600 p-6 relative">
             {/* Nav Title */}
             <div className="flex items-center flex-shrink-0 text-white mr-6">
                 <span className="font-semibold text-xl tracking-tight">
@@ -31,22 +23,22 @@ const Navbar = ({setPage}) => {
                 </button>
             </div>
             {/* Small Screen Nav Button */}
-            <div ref={NavButtons} className="w-full block flex-grow lg:flex lg:items-center lg:w-auto lg:translate-y-0">
+            <div ref={NavButtons} className={extendedNav ? extended+normalbuttons : collapsed+normalbuttons}>
                 <div className="text-sm lg:flex-grow">
                     <button
-                        onClick={() => setPage('dashboard')}
+                        onClick={() => {setPage('dashboard'); setExtendedNav(false)}}
                         className="block mt-4 lg:inline-block lg:mt-0 text-indigo-200 hover:text-white mr-4"
                     >
                         Dashboard
                     </button>
                     <button
-                        onClick={() => setPage('sections')}
+                        onClick={() => {setPage('sections'); setExtendedNav(false)}}
                         className="block mt-4 lg:inline-block lg:mt-0 text-indigo-200 hover:text-white mr-4"
                     >
                         Sections
                     </button>
                     <button
-                        onClick={() => setPage('photos')}
+                        onClick={() => {setPage('photos'); setExtendedNav(false)}}
                         className="block mt-4 lg:inline-block lg:mt-0 text-indigo-200 hover:text-white mr-4"
                     >
                         Photos

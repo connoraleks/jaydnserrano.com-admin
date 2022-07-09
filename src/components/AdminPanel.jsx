@@ -6,7 +6,7 @@ import Dashboard from "./Dashboard";
 const AdminPanel = () => {
     const [page, setPage] = useState("dashboard");
     return (
-        <div className="min-h-screen w-screen relative">
+        <div className="min-h-screen w-screen">
             <Navbar setPage={setPage}/>
             {page === "dashboard" && <Dashboard />}
             {page === "sections" && <SectionManager />}
