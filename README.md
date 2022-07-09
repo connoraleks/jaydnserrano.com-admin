@@ -1,5 +1,8 @@
 # Jaydn Serrano Photography Admin Panel
-Framework: React, TailWindCSS
+
+Libraries: React, Axios
+
+Frameworks: TailWindCSS
 
 Languages: HTML, JavaScript, JSX, CSS
 
