@@ -2,8 +2,8 @@ import {useState, useRef} from 'react';
 const Navbar = ({setPage}) => {
     const NavButtons = useRef(null);
     const [extendedNav, setExtendedNav] = useState(false);
-    const normalbuttons = ' p-6 pt-0 absolute left-0 w-full block flex-grow lg:p-0 lg:flex lg:items-center lg:w-auto lg:static bg-indigo-600'
-    const extended = 'top-full animate-verticalentrance '
+    const normalbuttons = ' p-6 pt-0 absolute left-0 w-full block flex-grow lg:p-0 lg:flex lg:items-center lg:w-auto lg:static lg:animate-none bg-indigo-600'
+    const extended = 'top-full animate-verticalentrance'
     const collapsed = 'bottom-full animate-verticalexit '
     return (
         <nav id='Navbar' className="fixed h-20 top-0 left-0 w-full flex items-center justify-between flex-wrap bg-indigo-600 p-6">
