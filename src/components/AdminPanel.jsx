@@ -1,7 +1,7 @@
 import {useState} from "react";
 import Navbar from "./Navbar";
 import SectionManager from "./SectionManager";
-import PhotoManager from "./PhotoManager";
+import UploadManager from "./UploadManager";
 import Dashboard from "./Dashboard";
 const AdminPanel = () => {
     const [page, setPage] = useState("dashboard");
@@ -10,7 +10,7 @@ const AdminPanel = () => {
             <Navbar setPage={setPage}/>
             {page === "dashboard" && <Dashboard />}
             {page === "sections" && <SectionManager />}
-            {page === "photos" && <PhotoManager />}
+            {page === "photos" && <UploadManager />}
         </div>
     );
 }
