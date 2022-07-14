@@ -3,6 +3,7 @@ import Navbar from "./Navbar";
 import SectionManager from "./SectionManager";
 import UploadManager from "./UploadManager";
 import Dashboard from "./Dashboard";
+import PhotoManager from "./PhotoManager";
 const AdminPanel = () => {
     const [page, setPage] = useState("dashboard");
     return (
@@ -11,6 +12,7 @@ const AdminPanel = () => {
             {page === "dashboard" && <Dashboard />}
             {page === "sections" && <SectionManager />}
             {page === "photos" && <UploadManager />}
+            <PhotoManager />
         </div>
     );
 }
