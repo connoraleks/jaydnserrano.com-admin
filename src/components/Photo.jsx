@@ -10,21 +10,26 @@ onDelete: (name) => {
 }
 */
 import { useState, useEffect } from 'react';
-const Photo = ({ photo, onDelete }) => {
+import axios from 'axios';
+const Photo = ({ photo, onDelete, sections }) => {
     const [section, setSection] = useState(photo.section);
     const [name, setName] = useState(photo.name);
+
     useEffect(() => {
         photo.name = name;
         photo.section = section;
     }
     , [name, section]);
     return (
-        <div className="w-full h-28 border border-white flex justify-center items-center overflow-hidden">
+        <div className="w-full h-36 border border-white flex justify-between items-center overflow-hidden">
             {/* image with 28rem height and width */}
-            <img src={photo.src} alt={name} className="w-28 h-28" />
-            <div className="flex flex-col p-4">
-                <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full h-8 p-2 border border-white rounded-lg bg-transparent" />
-                <input type="text" value={section} onChange={e => setSection(e.target.value)} className="w-full h-8 p-2 border border-white rounded-lg bg-transparent"/>
+            <img src={photo.src} alt={name} className="h-full" />
+            <div className="flex flex-col p-4 gap-2">
+                <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full h-fit p-2 border border-white rounded-lg bg-transparent" />
+                {/* Dropdown with section options from api */}
+                <select value={section} onChange={e => setSection(e.target.value)} className="w-full h-fit p-2 border border-white rounded-lg bg-transparent">
+                    {sections.map(section => <option key={section} value={section}>{section}</option>)}
+                </select>
                 <button onClick={() => onDelete(photo.file)}>Delete</button>
             </div>
         </div>

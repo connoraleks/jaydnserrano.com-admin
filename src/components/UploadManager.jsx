@@ -2,12 +2,26 @@ import {useState, useEffect} from 'react';
 import axios from 'axios';
 import Dropzone from 'react-dropzone';
 import Photo from './Photo';
-const api = "http://api.jaydnserrano.com/photos";
+const photoapi = "http://api.jaydnserrano.com/photos";
+const sectionapi = "http://api.jaydnserrano.com/sections";
 const UploadManager = () => {
     const [uploadedPhotos, setUploadedPhotos] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [section, setSection] = useState('other');
+    const [sections, setSections] = useState([]);
+    const getSections = async () => {
+        const res = await axios.get(sectionapi);
+        const data = res.data;
+        if(data.success && data.response.length > 0) {
+            setSections(data.response);
+        }
+        else if(data.success && data.response.length === 0) {
+            setSections(['other']);
+        }
+        else {
+            setError(data.response);
+        }
+    }
     const onDrop = (acceptedFiles) => {
         setLoading(true);
         setError(null);
@@ -25,7 +39,7 @@ const UploadManager = () => {
             return {
                 name: name,
                 file: image,
-                section: section,
+                section: 'other',
                 extension: splitname[1],
                 src: URL.createObjectURL(image)
                 
@@ -74,7 +88,7 @@ const UploadManager = () => {
         // Upload the images to api
         )
         formData.forEach(form => {
-            axios.post(api, form)       
+            axios.post(photoapi, form)       
             // If there are errors, return
             .catch(err => {
                 setLoading(false);
@@ -86,19 +100,19 @@ const UploadManager = () => {
         setUploadedPhotos([]);
         setLoading(false);
     }
+    useEffect(() => {
+        getSections();
+    }
+    , []);
     return (
         <div className="w-full h-fit flex flex-col justify-center items-center gap-4 p-4">
-            <div className="flex flex-col justify-center items-center gap-4">
-                {/* Input for section name */}
-                <div className="flex flex-col justify-center items-center">
-                    <input className="bg-white p-2 rounded-lg" type="text" placeholder="Section name" onChange={e => setSection(e.target.value)}/>
-                </div>
+            <div className="w-full flex flex-col justify-center items-center gap-4">
                 {/* Dropzone component to upload photos */}
                 <Dropzone onDrop={onDrop}>
                     {({getRootProps, getInputProps}) => (
-                        <div {...getRootProps()} className="flex flex-col justify-center items-center gap-4 h-fit border-dashed border-2 border-indigo-600 hover:border-indigo-700 hover:border-4 p-16">
+                        <div {...getRootProps()} className="flex flex-col justify-center items-center gap-4 h-fit w-full border-dashed border-2 border-indigo-600 hover:border-indigo-500 hover:border-4 p-16">
                             <input {...getInputProps()} />
-                            <p>Drag and drop photos here, or click to select files</p>
+                            <p className="text-white text-bold">Drag and drop photos here, or click to select files</p>
                         </div>
                     )}
                 </Dropzone>
@@ -111,7 +125,7 @@ const UploadManager = () => {
             {/* List of photos waiting to be uploaded */}
             <div className="flex flex-col justify-center items-center gap-4">
                 {!loading && uploadedPhotos.map(photo => (
-                    <Photo key={photo.name} photo={photo} onDelete={onDelete}/>
+                    <Photo key={photo.name} photo={photo} onDelete={onDelete} sections={sections}/>
                 ))}
             </div>
         </div>
