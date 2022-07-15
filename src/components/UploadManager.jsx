@@ -2,9 +2,14 @@ import {useState, useEffect} from 'react';
 import axios from 'axios';
 import Dropzone from 'react-dropzone';
 import Photo from './Photo';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 const photoapi = "http://api.jaydnserrano.com/photos";
 const sectionapi = "http://api.jaydnserrano.com/sections";
-const UploadManager = () => {
+const UploadManager = ({sx}) => {
     const [uploadedPhotos, setUploadedPhotos] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -66,8 +71,9 @@ const UploadManager = () => {
         setUploadedPhotos(uploadedPhotos.concat(newPhotos));
         setLoading(false);
     }
-    const onDelete = (file) => {
-        setUploadedPhotos(uploadedPhotos.filter(photo => photo.file !== file));
+    const onDelete = (photo) => {
+        const newPhotos = uploadedPhotos.filter(existingPhoto => existingPhoto.src !== photo.src);
+        setUploadedPhotos(newPhotos);
     }
     const onUpload = () => {
         setLoading(true);
@@ -105,7 +111,7 @@ const UploadManager = () => {
     }
     , []);
     return (
-        <div className="w-full h-fit flex flex-col justify-center items-center gap-4 p-4">
+        <div className="w-full h-fit flex flex-col justify-center items-center gap-4 p-4 text-white">
             <div className="w-full flex flex-col justify-center items-center gap-4">
                 {/* Dropzone component to upload photos */}
                 <Dropzone onDrop={onDrop}>
@@ -122,12 +128,26 @@ const UploadManager = () => {
             {/* Loading and Error messages*/}
             {loading && <p>Loading...</p>}
             {error && <p>{error}</p>}
-            {/* List of photos waiting to be uploaded */}
-            <div className="flex flex-col justify-center items-center gap-4">
-                {!loading && uploadedPhotos.map(photo => (
-                    <Photo key={photo.name} photo={photo} onDelete={onDelete} sections={sections}/>
-                ))}
-            </div>
+            {/* List of photos waiting to be uploaded wrapped in an accordion */}
+            <Accordion>
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon fill={'white'}/>}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                        sx={sx}
+                    >
+                        {/* Title of accordion displaying how many photos are in accordion*/}
+                        <Typography className="text-white text-bold" variant="h6">{uploadedPhotos.length} photos</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails
+                        sx={sx}>                            
+                        <div className="flex flex-col justify-center items-center gap-4">
+                            {!loading && uploadedPhotos.map(photo => (
+                                <Photo key={photo.name} photo={photo} onDelete={onDelete} sections={sections}/>
+                            ))}
+                        </div>
+                    </AccordionDetails>
+            </Accordion>
         </div>
     );
 }
