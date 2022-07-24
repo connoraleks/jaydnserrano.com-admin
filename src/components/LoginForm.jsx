@@ -1,10 +1,11 @@
 import axios from 'axios';
 import {useState} from 'react';
+const api = "https://api.jaydnserrano.com/login";
 const LoginForm = ({setIsLoggedIn}) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const validateLogin = (e) => {
-        axios.post('http://api.jaydnserrano.com/login', {
+        axios.post(api, {
             username: username,
             password: password
         }).then(res => {

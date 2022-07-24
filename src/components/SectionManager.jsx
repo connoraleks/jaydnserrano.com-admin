@@ -3,10 +3,11 @@ import axios from 'axios';
 import Section from './Section';
 const SectionManager = () => {
     const [sections, setSections] = useState([]);
+    const [count, setCount] = useState({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [newSection, setNewSection] = useState('');
-    const api = "http://api.jaydnserrano.com/sections";
+    const api = "https://api.jaydnserrano.com/sections";
     const getSections = () => {
         setLoading(true);
         setError(null);
@@ -15,14 +16,15 @@ const SectionManager = () => {
         .then(res => {
             const data = res.data;
             console.log(data);
-            if(data.success && data.response.length > 0) {
-                setSections(data.response);
+            if(data.success && data.sections.length > 0) {
+                setSections(data.sections);
+                setCount(data.count);
             }
-            else if(data.success && data.response.length === 0) {
-                setSections(['other']);
+            else if(data.success && data.sections.length === 0) {
+                setSections([]);
             }
             else {
-                setError(data.response);
+                setError(data.sections);
             }
             setLoading(false);
         }
@@ -98,9 +100,9 @@ const SectionManager = () => {
                     <button className="bg-blue-500 p-2 rounded-lg" onClick={addSection}>Create</button>
                 </div>
                 {/* List of sections that can be deleted */}
-                <div className="flex flex-col justify-center items-center gap-4">
+                <div className="flex flex-wrap justify-between items-center gap-4">
                     {!loading && sections.map(section => (
-                        <Section key={section} section={section} onDelete={deleteSection}/>
+                        <Section key={section} section={section} count={count[section]} onDelete={deleteSection}/>
                     ))}
                 </div>
             </div>

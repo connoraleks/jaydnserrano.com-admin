@@ -2,8 +2,11 @@ import {useState, useEffect} from 'react';
 import axios from 'axios';
 import Dropzone from 'react-dropzone';
 import Photo from './Photo';
-const photoapi = "http://api.jaydnserrano.com/photos";
-const sectionapi = "http://api.jaydnserrano.com/sections";
+import { Accordion, AccordionSummary, AccordionDetails } from './CustomAccordion';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+const photoapi = "https://api.jaydnserrano.com/photos";
+const sectionapi = "https://api.jaydnserrano.com/sections";
 const UploadManager = () => {
     const [uploadedPhotos, setUploadedPhotos] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -12,14 +15,15 @@ const UploadManager = () => {
     const getSections = async () => {
         const res = await axios.get(sectionapi);
         const data = res.data;
-        if(data.success && data.response.length > 0) {
-            setSections(data.response);
+        if(data.success && data.sections.length > 0) {
+            // set sections to data.response (an array of strings) plus a new section named 'other'
+            setSections(data.sections.concat(['other']));
         }
-        else if(data.success && data.response.length === 0) {
+        else if(data.success && data.sections.length === 0) {
             setSections(['other']);
         }
         else {
-            setError(data.response);
+            setError(data.sections);
         }
     }
     const onDrop = (acceptedFiles) => {
@@ -66,8 +70,9 @@ const UploadManager = () => {
         setUploadedPhotos(uploadedPhotos.concat(newPhotos));
         setLoading(false);
     }
-    const onDelete = (file) => {
-        setUploadedPhotos(uploadedPhotos.filter(photo => photo.file !== file));
+    const onDelete = (photo) => {
+        const newPhotos = uploadedPhotos.filter(existingPhoto => existingPhoto.src !== photo.src);
+        setUploadedPhotos(newPhotos);
     }
     const onUpload = () => {
         setLoading(true);
@@ -78,7 +83,7 @@ const UploadManager = () => {
             return;
         }
         // Create a form data object for each object in uploadedPhotos
-        const formData = uploadedPhotos.map(photo => {
+        const forms = uploadedPhotos.map(photo => {
             const formData = new FormData();
             formData.append('name', photo.name + '.' + photo.extension);
             formData.append('section', photo.section);
@@ -87,47 +92,74 @@ const UploadManager = () => {
         }
         // Upload the images to api
         )
-        formData.forEach(form => {
-            axios.post(photoapi, form)       
-            // If there are errors, return
-            .catch(err => {
+        const promises = forms.map(form => {
+            return axios.post(photoapi, form);
+        }
+        );
+        Promise.all(promises)
+        .then(res => {
+            // If all images were uploaded and returned {'response': 'File successfully uploaded', 'success': True}, return and set loading to false and clear uploadedPhotos
+            if (res.every(r => r.data.success)) {
                 setLoading(false);
-                setError(err.response.data.message);
+                setUploadedPhotos([]);
             }
-            );
-        });
-        // Clear the uploadedPhotos array
-        setUploadedPhotos([]);
-        setLoading(false);
+            // If any images were not uploaded, return a count of the images that were not uploaded and set error, then clear uploadedPhotos
+            else {
+                const failed = res.filter(r => !r.data.success);
+                setError(String(failed.length) + " images failed to upload.");
+                setUploadedPhotos([]);
+                setLoading(false);
+
+            }
+        }
+        )
+        .catch(err => {
+            setError(err);
+            setLoading(false);
+        }
+        );
     }
     useEffect(() => {
         getSections();
     }
     , []);
     return (
-        <div className="w-full h-fit flex flex-col justify-center items-center gap-4 p-4">
-            <div className="w-full flex flex-col justify-center items-center gap-4">
-                {/* Dropzone component to upload photos */}
-                <Dropzone onDrop={onDrop}>
-                    {({getRootProps, getInputProps}) => (
-                        <div {...getRootProps()} className="flex flex-col justify-center items-center gap-4 h-fit w-full border-dashed border-2 border-indigo-600 hover:border-indigo-500 hover:border-4 p-16">
-                            <input {...getInputProps()} />
-                            <p className="text-white text-bold">Drag and drop photos here, or click to select files</p>
-                        </div>
-                    )}
-                </Dropzone>
-                {/* Upload Button */}
-                <button className="bg-blue-500 p-2 rounded-lg" onClick={onUpload}>Upload</button>
-            </div>
+        <div className="w-full h-fit flex flex-col justify-center items-center gap-4 p-4 text-white">
+            <h1 className="text-3xl font-bold mb-4">Upload Manager</h1>
+            {/* Dropzone component to upload photos */}
+            <Dropzone onDrop={onDrop}>
+                {({getRootProps, getInputProps}) => (
+                    <div {...getRootProps()} className="flex flex-col justify-center items-center gap-4 h-fit w-full border-dashed border-2 border-indigo-600 hover:border-indigo-500 hover:border-4 p-16">
+                        <input {...getInputProps()} />
+                        <p className="text-white text-bold">Drag and drop photos here, or click to select files</p>
+                    </div>
+                )}
+            </Dropzone>
             {/* Loading and Error messages*/}
-            {loading && <p>Loading...</p>}
-            {error && <p>{error}</p>}
-            {/* List of photos waiting to be uploaded */}
-            <div className="flex flex-col justify-center items-center gap-4">
-                {!loading && uploadedPhotos.map(photo => (
-                    <Photo key={photo.name} photo={photo} onDelete={onDelete} sections={sections}/>
-                ))}
-            </div>
+            {loading && <h2 className='text-white'>Loading...</h2>}
+            {error && <h2 className="text-white">{error}</h2>}
+            {/* List of photos waiting to be uploaded wrapped in an accordion */}
+            <Accordion>
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon fill={'white'}/>}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                        
+                    >
+                        {/* Title of accordion displaying how many photos are in accordion*/}
+                        <Typography className="text-white text-bold" variant="h6">{uploadedPhotos.length} photos</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails
+                        >                            
+                        <div className="flex flex-col justify-center items-center gap-4">
+                            {!loading && uploadedPhotos.map(photo => (
+                                <Photo key={photo.name} photo={photo} onDelete={onDelete} sections={sections}/>
+                            ))}
+                        </div>
+                    </AccordionDetails>
+            </Accordion>
+            {/* Upload Button */}
+            <button className="bg-blue-500 p-2 rounded-lg w-full hover:bg-blue-700" onClick={onUpload}>Upload</button>
         </div>
     );
 }
