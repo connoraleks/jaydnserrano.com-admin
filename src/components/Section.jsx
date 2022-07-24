@@ -1,12 +1,9 @@
-const Section = ({section, onDelete}) => {
+const Section = ({section, onDelete, count}) => {
     return (
-        <div className="flex flex-col items-center justify-center gap-4">
-            <div className="flex items-center justify-center gap-4 border-2 border-white rounded-lg p-4">
-                <h1 className="text-white text-2xl">{section}</h1>
-                <div className="flex flex-col items-center justify-center gap-4">
-                    <button className="bg-red-400 text-white text-lg p-2 rounded-lg" onClick={() => onDelete(section)}>Delete</button>
-                </div>
-            </div>
+        <div className="w-48 h-48 border border-white flex flex-col justify-center items-center overflow-hidden p-4 gap-4">
+            <h1 className="text-white text-2xl">{section}</h1>
+            <h2 className="text-white text-xl">{count} photos</h2>
+            <button className="transition-colors bg-indigo-600 text-white text-lg p-2 rounded-lg hover:bg-indigo-900" onClick={() => onDelete(section)}>Delete</button>
         </div>
     );
 }

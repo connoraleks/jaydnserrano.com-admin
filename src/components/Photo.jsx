@@ -10,7 +10,6 @@ onDelete: (name) => {
 }
 */
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 const Photo = ({ photo, onDelete, sections }) => {
     const [section, setSection] = useState(photo.section);
     const [name, setName] = useState(photo.name);
@@ -26,7 +25,7 @@ const Photo = ({ photo, onDelete, sections }) => {
             <img src={photo.src} alt={name} className="h-full" />
             <div className="flex flex-col p-4 gap-2">
                 <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full h-fit p-2 border border-white rounded-lg bg-transparent" />
-                {/* Dropdown with section options from api OR section value if upload is true or false*/}
+                {/* Dropdown with section options from api OR current section if in photo manager*/}
                 {sections && <select value={section} onChange={e => setSection(e.target.value)} className="w-full h-fit p-2 border border-white rounded-lg bg-transparent">
                     {sections.map(section => <option key={section} value={section}>{section}</option>)}
                 </select>}

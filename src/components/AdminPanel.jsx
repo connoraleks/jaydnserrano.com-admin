@@ -4,15 +4,9 @@ import SectionManager from "./SectionManager";
 import UploadManager from "./UploadManager";
 import Dashboard from "./Dashboard";
 import PhotoManager from "./PhotoManager";
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
+import { Accordion, AccordionSummary, AccordionDetails } from './CustomAccordion';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-const sx = {
-    backgroundColor: '#1f2937',
-    color: 'white',
-}
 const AdminPanel = () => {
     const [page, setPage] = useState("dashboard");
     return (
@@ -23,33 +17,33 @@ const AdminPanel = () => {
             {page === "photos" && 
             <div>
                 {/* Accordion component for UploadManager*/}
-                <Accordion>
+                <Accordion defaultExpanded={true}>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon fill={'white'}/>}
                         aria-controls="panel1a-content"
                         id="panel1a-header"
-                        sx={sx}
+                        
                     >
                         <Typography>Upload Manager</Typography>
                     </AccordionSummary>
                     <AccordionDetails
-                        sx={sx}>
-                        <UploadManager sx={sx}/>
+                        >
+                        <UploadManager />
                     </AccordionDetails>
                 </Accordion>
-                {/* Accordion component for PhotoManger*/}
-                <Accordion>
+                {/* Accordion component for PhotoManager*/}
+                <Accordion defaultExpanded={true}>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon fill={'white'}/>}
                         aria-controls="panel1a-content"
                         id="panel1a-header"
-                        sx={sx}
+                        
                     >
                         <Typography>Photo Manager</Typography>
                     </AccordionSummary>
                     <AccordionDetails
-                        sx={sx}>
-                        <PhotoManager sx={sx}/>
+                        >
+                        <PhotoManager />
                     </AccordionDetails>
                 </Accordion>
             </div>}
