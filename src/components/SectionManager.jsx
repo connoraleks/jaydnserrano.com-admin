@@ -7,6 +7,7 @@ const SectionManager = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [newSection, setNewSection] = useState('');
+    const [parent, setParent] = useState('');
     const api = "https://api.jaydnserrano.com/sections";
     const getSections = () => {
         setLoading(true);
@@ -17,6 +18,7 @@ const SectionManager = () => {
             const data = res.data;
             console.log(data);
             if(data.success && data.sections.length > 0) {
+                console.log(data.sections);
                 setSections(data.sections);
                 setCount(data.count);
             }
@@ -64,7 +66,8 @@ const SectionManager = () => {
         setLoading(true);
         setError(null);
         axios.post(api, {
-            sections: [newSection]
+            section: newSection,
+            parent: parent
         })
         .then(res => {
             const data = res.data;
@@ -96,6 +99,16 @@ const SectionManager = () => {
                 {error && <p>{error}</p>}
                 {/* Create new section */}
                 <div className="flex justify-center items-center gap-4 p-4">
+                    {/* Dropdown menu to select parent directory */}
+                    <select className="bg-white shadow-md border border-gray-300 rounded-md p-2" onChange={(e) => setParent(e.target.value)}>
+                        <option value="">Select Parent</option>
+                        {sections.map(section => {
+                            return (
+                                <option key={sections.indexOf(section)} value={section}>{section}</option>
+                            );
+                        }
+                        )}
+                    </select>
                     <input type="text" className="bg-white text-indigo-200 text-lg p-2" placeholder="New Section" value={newSection} onChange={(e) => setNewSection(e.target.value)}/>
                     <button className="bg-blue-500 p-2 rounded-lg" onClick={addSection}>Create</button>
                 </div>
