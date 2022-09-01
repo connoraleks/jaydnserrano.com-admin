@@ -1,35 +1,33 @@
-import {useState, useEffect} from 'react'
-import axios from 'axios'
-import { Accordion, AccordionSummary, AccordionDetails } from './CustomAccordion';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useState, useEffect } from 'react';
+import { Accordion, AccordionSummary, AccordionDetails } from './CustomAccordion';
+import axios from 'axios';
 import Photo from './Photo'
-const api = 'https://api.jaydnserrano.com/photos';
-const PhotoManager = () => {
-    const [photos, setPhotos] = useState({})
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState(null)
-    const getPhotos = () => {
-        setLoading(true)
-        axios(api)
-        .then(res => {
-            console.log(res.data);
-            if(res.data.success) {
-                setPhotos(res.data.response)
-            }
-            else{
-                setError(res.data.error)
-            }
-            setLoading(false)
-        })
-        .catch(err => {
-            setError(err)
-            setLoading(false)
+const Gallerysections = ({gallery}) => {
+    const [sections, setSections] = useState(null);
+    const [photos, setPhotos] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [expanded, setExpanded] = useState(false);
+    const [error, setError] = useState(false);
+    const handleChange = (panel) => (event, isExpanded) => {
+        setExpanded(isExpanded ? panel : false);
+        //Scroll to panel when expanded
+        if (isExpanded) {
+            const element = document.getElementById(panel);
+            setTimeout(() => element.scrollIntoView({ behavior: 'smooth' , block: 'start', inline: 'center'}), 650);
         }
-        )
+    }
+    const fetchSections = async () => {
+        const res = await axios('https://api.jaydnserrano.com/sections');
+        if(res.data.success) setSections({'names': res.data.sections, 'count': res.data.count});
+    }
+    const fetchPhotos = async () => {
+        const res = await axios('https://api.jaydnserrano.com/photos');
+        if(res.data.success) setPhotos(res.data.photos);
     }
     const onDelete = (photo) => {
-        axios.delete(api, {
+        axios.delete('https://api.jaydnserrano.com/photos', {
             data: {
                 section: photo.section,
                 name: photo.name
@@ -37,7 +35,7 @@ const PhotoManager = () => {
         })
         .then(res => {
             if(res.data.success) {
-                getPhotos()
+                fetchPhotos()
             }
             else{
                 setError(res.data.error)
@@ -47,31 +45,55 @@ const PhotoManager = () => {
             setError(err)
         })
     }
-    useEffect(() => { getPhotos() }, []);
+
+    useEffect(() => {
+        fetchSections();
+    }, []);
+    useEffect(() => {
+        if(sections) {
+            fetchPhotos();
+        }
+    } , [sections]);
+    useEffect(() => {
+        if(photos) {
+            console.log(photos)
+            setLoading(false);
+        }
+    } , [photos]);
     return (
-        <div className="flex flex-col justify-center items-center text-white">
-            <h1 className="text-3xl font-bold mb-4">Photo Manager</h1>
-            {loading && <div className="text-center">Loading...</div>}
-            {error && <div className="text-center">{error}</div>}
-            {!loading && Object.keys(photos).map(section => (
-                <Accordion key={section} >
-                    <AccordionSummary
-                        expandIcon={<ExpandMoreIcon fill={'white'}/>}
-                        aria-controls="panel1a-content"
-                        id="panel1a-header"
-                    >
-                        <Typography className="text-white" variant="h6">{section}</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <div className="flex flex-col justify-center items-center gap-4">
-                            {!loading && photos[section].map(photo => (
-                                <Photo key={photo.name} photo={{'name': photo.name, section: section, src: photo.url, file: null}} onDelete={onDelete}/>
+        <div ref={gallery} className="h-fit text-white my-4">
+            {/* Create an accordion for each section in sections */}
+            {!loading && !error && sections.names.map((section, index) => {
+                return (
+                    <Accordion id={index} expanded={expanded === index} key={index} onChange={handleChange(index)}>
+                        <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-controls={`${section}-content`}
+                            id={`${section}-header`}
+                        >
+                            <Typography><span className="font-bold text-2xl">{section}</span> <br/> <span className="text-slate-500">{sections.count[section].num_files + ' photos | ' + sections.count[section].num_subdirectories + ' subcategories'}</span></Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            {photos[section].map(photo => (
+                                <Photo key={photo.name} photo={{'name': photo.name, section: section, src: photo.src, file: null}} onDelete={onDelete}/>
                             ))}
-                        </div>
-                    </AccordionDetails>
-                </Accordion>
-            ))}
+                        </AccordionDetails>
+                    </Accordion>
+                )
+            } )}
+            {loading && <div className="text-center">
+                <div className="spinner-border text-white" role="status">
+                    <span className="sr-only">Loading...</span>
+                    </div>
+                </div>
+            }
+            {error && <div className="text-center">
+                <div className="text-white">
+                    <span className="font-bold text-2xl">Error</span> <br/> <span className="text-slate-500">{error}</span>
+                </div>
+            </div>}
         </div>
-    )
+    );
 }
-export default PhotoManager;
+
+export default Gallerysections;
