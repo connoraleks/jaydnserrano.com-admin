@@ -2,11 +2,15 @@ import Modal from '@mui/material/Modal';
 import { useState, useEffect } from 'react';
 import BasicSelect from './BasicSelect';
 import Dropzone from 'react-dropzone';
+import axios from 'axios';
 const DirentConfiguration = ({currentDirent, openModal, setOpenModal}) => {
     const values = ['Photo', 'Directory'];
+    const [name, setName] = useState('');
     const [type , setType] = useState(0);
+    const [files, setFiles] = useState([]);
     const onDrop = (acceptedFiles) => {
         console.log(acceptedFiles);
+        setFiles([...files, ...acceptedFiles]);
     }
     useEffect(() => {
         if (openModal) {
@@ -32,10 +36,7 @@ const DirentConfiguration = ({currentDirent, openModal, setOpenModal}) => {
                 </p>
                 {/* Select photo or directory */}
                 <BasicSelect label="Type" values={values} val={type} setVal={setType} />
-                {/* Input for name */}
-                <input type="text" placeholder="Name" className="w-full border-2 border-gray-300 rounded-md p-2 my-2" />
-                {/* Input for file upload only if photo */}
-                {type === 0 &&
+                {type === 0 ? 
                 <Dropzone onDrop={onDrop}>
                     {({getRootProps, getInputProps}) => (
                         <div {...getRootProps()} className="flex flex-col justify-center items-center border-dashed border-2 border-gray-400 hover:border-gray-600 p-16">
@@ -43,10 +44,43 @@ const DirentConfiguration = ({currentDirent, openModal, setOpenModal}) => {
                             <p className="text-black text-bold">Drag and drop photos here, or click to select files</p>
                         </div>
                     )}
-                </Dropzone>
+                </Dropzone> : <input type="text" placeholder="Name" className="w-full border-2 border-gray-300 rounded-md p-2 my-2" value={name} onChange={(e) => setName(e.currentTarget.value)}/>
                 }
                 {/* Submit Button */}
                 <button className="bg-blue-500 text-white rounded-md p-2 w-fit hover:bg-blue-600" onClick={() => {
+                    if (type === 0) {
+                        files.forEach(file => {
+                            const formData = new FormData();
+                            formData.append('file', file);
+                            formData.append('name', file.name);
+                            formData.append('type', type);
+                            formData.append('parent', currentDirent.id);
+                            axios.post('https://api.jaydnserrano.com/dirents', formData, {
+                                headers: {
+                                    'Content-Type': 'multipart/form-data'
+                                }
+                            }).then(res => {
+                                console.log(res);
+                            }).catch(err => {
+                                console.log(err);
+                            });
+                        });
+                    }
+                    else {
+                        const formData = new FormData();
+                        formData.append('name', name);
+                        formData.append('type', type);
+                        formData.append('parent', currentDirent.id);
+                        axios.post('https://api.jaydnserrano.com/dirents', formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        }).then(res => {
+                            console.log(res);
+                        }).catch(err => {
+                            console.log(err);
+                        });
+                    }
                     setOpenModal(false);
                 }}>Create</button>
             </div>
