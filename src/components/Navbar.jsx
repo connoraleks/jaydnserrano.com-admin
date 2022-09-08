@@ -25,31 +25,6 @@ const Navbar = ({setPage}) => {
             {/* Small Screen Nav Button */}
             <div ref={NavButtons} className={extendedNav ? extended+normalbuttons : collapsed+normalbuttons}>
                 <div className="text-sm lg:flex-grow">
-                    <button
-                        onClick={() => {setPage('dashboard'); setExtendedNav(false)}}
-                        className="block mt-4 lg:inline-block lg:mt-0 text-indigo-200 hover:text-white mr-4"
-                    >
-                        Dashboard
-                    </button>
-                    <button
-                        onClick={() => {setPage('sections'); setExtendedNav(false)}}
-                        className="block mt-4 lg:inline-block lg:mt-0 text-indigo-200 hover:text-white mr-4"
-                    >
-                        Sections
-                    </button>
-                    <button
-                        onClick={() => {setPage('photos'); setExtendedNav(false)}}
-                        className="block mt-4 lg:inline-block lg:mt-0 text-indigo-200 hover:text-white mr-4"
-                    >
-                        Photos
-                    </button>
-                </div>
-                <div>
-                    <button
-                        className="block mt-4 lg:inline-block lg:mt-0 text-indigo-200 hover:text-white mr-4"
-                    >
-                        Logout
-                    </button>
                 </div>
             </div>
         </nav>
