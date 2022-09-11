@@ -1,5 +1,5 @@
 import {useState, useRef} from 'react';
-const Navbar = ({setPage}) => {
+const Navbar = ({setTriggerRefresh}) => {
     const NavButtons = useRef(null);
     const [extendedNav, setExtendedNav] = useState(false);
     const normalbuttons = ' p-6 pt-0 absolute left-0 w-full block flex-grow lg:p-0 lg:flex lg:items-center lg:w-auto lg:static lg:animate-none bg-indigo-600 z-40'
@@ -22,9 +22,11 @@ const Navbar = ({setPage}) => {
                     </svg>
                 </button>
             </div>
-            {/* Small Screen Nav Button */}
             <div ref={NavButtons} className={extendedNav ? extended+normalbuttons : collapsed+normalbuttons}>
                 <div className="text-sm lg:flex-grow">
+                    <button onClick={() => setTriggerRefresh(true)} className="block mt-4 lg:inline-block lg:mt-0 text-indigo-200 hover:text-white mr-4">
+                        Refresh
+                    </button>
                 </div>
             </div>
         </nav>
