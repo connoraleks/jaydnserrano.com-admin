@@ -6,15 +6,11 @@ import MuiAccordionDetails from '@mui/material/AccordionDetails';
 const Accordion = styled((props) => (
     <MuiAccordion disableGutters elevation={0} square {...props} />
     ))(({ theme }) => ({
-    border: `1px solid ${theme.palette.divider}`,
     boxShadow: 'none',
     backgroundColor: '#1f2937',
     width: '100%',
     minHeight: 'fit-content',
     maxHeight: 'full',
-    '&:not(:last-child)': {
-        borderBottom: 0,
-    },
     '&:before': {
         display: 'none',
     },

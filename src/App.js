@@ -4,7 +4,7 @@ import {useState} from "react";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   return (
-    <div id='App' className="bg-gray-800 w-screen h-screen">
+    <div id='App' className="bg-gray-800">
       {!isLoggedIn && <LoginForm setIsLoggedIn={setIsLoggedIn}/>}
       {isLoggedIn && <AdminPanel/>}
     </div>
