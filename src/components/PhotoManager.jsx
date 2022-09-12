@@ -12,7 +12,6 @@ const PhotoManager = ({setTriggerRefresh, galleryRef, directory}) => {
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
     }
-    console.log(directory);
     return (
         <div ref={galleryRef} className="h-fit text-white my-4">
             <DirentConfiguration setTriggerRefresh={setTriggerRefresh} newDirent={true} currentDirent={currentDirent} openModal={openNewDirentModal} setOpenModal={setOpenNewDirentModal}/>
@@ -76,7 +75,7 @@ const PhotoManager = ({setTriggerRefresh, galleryRef, directory}) => {
                     </Accordion>
                 )
             } )}
-            {/* If galleryRef is passed this is the root PhotoManager, so make an add button to add to the root */}
+            {/* If galleryRef is passed this is the root PhotoManager, so make an add button to add Dirents to the root */}
             {galleryRef && <div className='flex justify-center align-center'><button
                 className="border border-white rounded-full hover:bg-slate-500 w-8 h-8"
                 onClick={(event) => {
