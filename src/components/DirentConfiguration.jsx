@@ -9,15 +9,15 @@ const DirentConfiguration = ({ setTriggerRefresh, newDirent, currentDirent, open
     const [type , setType] = useState(0);
     const [filesToUpload, setFilesToUpload] = useState([]);
 
-    const handleClose = () => {
+    const handleClose = (refresh=true) => {
         setOpenModal(false);
         setName('');
         setType(0);
         setFilesToUpload([]);
-        setTriggerRefresh(true);
+        if(refresh) setTriggerRefresh(true);
     };
     const closeButton = (
-        <button onClick={handleClose} className="absolute top-0 right-0 m-4">
+        <button onClick={() => handleClose(false)} className="absolute top-0 right-0 m-4">
             X
         </button>
     )
@@ -30,6 +30,7 @@ const DirentConfiguration = ({ setTriggerRefresh, newDirent, currentDirent, open
                 formData.append('name', file.name);
                 formData.append('type', type);
                 formData.append('parent', currentDirent.id);
+                console.log(file, file.name, type, currentDirent.id);
                 axios.post('https://api.jaydnserrano.com/dirents', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'

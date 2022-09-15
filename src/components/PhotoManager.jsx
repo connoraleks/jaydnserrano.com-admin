@@ -1,9 +1,9 @@
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import PhotoAlbum from 'react-photo-album'
 import { useState } from 'react';
 import { Accordion, AccordionSummary, AccordionDetails } from './CustomAccordion';
 import DirentConfiguration from './DirentConfiguration';
+import Album from './Album';
 const PhotoManager = ({setTriggerRefresh, galleryRef, directory}) => {
     const [expanded, setExpanded] = useState(false);
     const [openNewDirentModal, setOpenNewDirentModal] = useState(false);
@@ -12,80 +12,46 @@ const PhotoManager = ({setTriggerRefresh, galleryRef, directory}) => {
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
     }
+    const handleClick = (event, photo, edit=true) => {
+        // open link in new tab
+        event.stopPropagation();
+        setCurrentDirent(photo);
+        if(edit) setOpenEditDirentModal(true);
+        else setOpenNewDirentModal(true);
+    }
     return (
-        <div ref={galleryRef} className="h-fit text-white my-4">
-            <DirentConfiguration setTriggerRefresh={setTriggerRefresh} newDirent={true} currentDirent={currentDirent} openModal={openNewDirentModal} setOpenModal={setOpenNewDirentModal}/>
-            <DirentConfiguration  setTriggerRefresh={setTriggerRefresh} newDirent={false} currentDirent={currentDirent} openModal={openEditDirentModal} setOpenModal={setOpenEditDirentModal} />
-            {/* Create an accordion for each section in directory */}
-            {directory && directory.dirs.map((section) => {
+        <div ref={galleryRef} className='flex flex-col justify-center items-center'>
+            <DirentConfiguration setTriggerRefresh={setTriggerRefresh} newDirent={true} currentDirent={currentDirent} openModal={openNewDirentModal} setOpenModal={setOpenNewDirentModal} />
+            <DirentConfiguration setTriggerRefresh={setTriggerRefresh} newDirent={false} currentDirent={currentDirent} openModal={openEditDirentModal} setOpenModal={setOpenEditDirentModal} />
+            {directory && directory.dirs.map((dirent, index) => {
                 return (
-                    <Accordion id={section.id} expanded={expanded === section.id} key={section.id} onChange={handleChange(section.id)}>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls={`${section.name}-content`}
-                            id={`${section.name}-header`}
-                        >
-                            <Typography className=''>
-                                <div className='flex flex-col'>
-                                    <span className="flex justify-left gap-4 font-bold text-2xl align-center">
-                                        {/* Name of the section */}
-                                        {section.name}
-                                        
-                                        {/* Add new dirent button */}
-                                        <div className='border border-white rounded-full hover:bg-slate-500 flex justify-center align-center'><button 
-                                            className="w-8 h-8"
-                                            onClick={(event) => {
-                                                event.stopPropagation();
-                                                setCurrentDirent(section);
-                                                setOpenNewDirentModal(true);
-                                            }}>
-                                        +
-                                        </button></div>
-                                        {/* Edit section button */}
-                                        <div className='border border-white rounded-full hover:bg-slate-500 flex justify-center align-center'><button
-                                            className="w-8 h-8"
-                                            onClick={(event) => {
-                                                event.stopPropagation();
-                                                setCurrentDirent(section);
-                                                setOpenEditDirentModal(true);
-                                            }}>
-                                        E
-                                        </button></div>
-                                    </span> 
-                                    <span className="text-slate-500">{section.photos.length+ ' photos | ' + section.dirs.length + ' subcategories'}</span>
-                                </div>
+                    <Accordion key={dirent.id} expanded={expanded === dirent.id} onChange={handleChange(dirent.id)}>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                            <Typography className="w-full h-full flex justify-start items-center gap-2 ">
+                                <span>
+                                    <span className="font-bold text-lg">{dirent.name}</span>
+                                    <br/>
+                                    <span className='text-xs'>{dirent.photos.length} Photos | {dirent.dirs.length} Directories</span>
+                                </span>
+                                {/* Edit Button */}
+                                <button onClick={(e) => handleClick(e, dirent)} className="font-bold border rounded-full w-8 h-8 mx-1">
+                                    E
+                                </button>
+                                {/* New Dirent Button */}
+                                <button onClick={(e) => handleClick(e, dirent, false)} className="font-bold border rounded-full w-8 h-8 mx-1">
+                                    +
+                                </button>
                             </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            {/* PhotoManager for this layer */}
-                            <PhotoManager setTriggerRefresh={setTriggerRefresh} directory={section}></PhotoManager>
-                            <PhotoAlbum
-                                photos={section.photos}
-                                layout='rows'
-                                targetRowHeight={350}
-                                margin={2}
-                                onClick={ (event, photo) => {
-                                    // open link in new tab
-                                    event.stopPropagation();
-                                    setCurrentDirent(photo);
-                                    setOpenEditDirentModal(true);
-                                }}
-                            />                         
+                            {dirent.dirs.map((dirent, index) => <PhotoManager key={dirent.id} setTriggerRefresh={setTriggerRefresh} directory={dirent} />)}
+                            <Album photoSet={dirent.photos} handleClick={handleClick} />
                         </AccordionDetails>
                     </Accordion>
                 )
-            } )}
-            {/* If galleryRef is passed this is the root PhotoManager, so make an add button to add Dirents to the root */}
-            {galleryRef && <div className='flex justify-center align-center'><button
-                className="border border-white rounded-full hover:bg-slate-500 w-8 h-8"
-                onClick={(event) => {
-                    event.stopPropagation();
-                    setCurrentDirent(directory);
-                    console.log(directory);
-                    setOpenNewDirentModal(true);
-                }}>
-            +
-            </button></div>}
+            }
+            )}
+            {galleryRef ? <button onClick={(e) => handleClick(e, {...directory, 'name': 'root'}, false)} className="font-bold border rounded-full w-8 h-8 text-white">+</button> : null}
         </div>
     );
 }

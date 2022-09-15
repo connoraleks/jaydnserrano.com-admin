@@ -38,7 +38,7 @@ const AdminPanel = () => {
             <Navbar setTriggerRefresh={setTriggerRefresh}/>
             {/* Button that get requests api.jaydnserrano.com/database */}
             <main className='w-full h-full p-4 flex justify-center items-center'>
-                {dirents ? <div className='w-fit h-fit border rounded-lg border-gray-600'>
+                {dirents ? <div className='w-fit h-fit border rounded-lg border-gray-600 p-4'>
                     <PhotoManager setTriggerRefresh={setTriggerRefresh} galleryRef={galleryRef} directory={dirents}/>
                 </div> : 
                 <AiOutlineLoading3Quarters className='animate-spin text-6xl text-gray-600'/>}
