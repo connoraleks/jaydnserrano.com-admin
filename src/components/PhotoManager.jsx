@@ -44,7 +44,7 @@ const PhotoManager = ({setTriggerRefresh, galleryRef, directory}) => {
                             </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            {dirent.dirs.map((dirent, index) => <PhotoManager key={dirent.id} setTriggerRefresh={setTriggerRefresh} directory={dirent} />)}
+                            <PhotoManager key={dirent.id} setTriggerRefresh={setTriggerRefresh} directory={dirent} />
                             <Album photoSet={dirent.photos} handleClick={handleClick} />
                         </AccordionDetails>
                     </Accordion>
