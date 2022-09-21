@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Accordion, AccordionSummary, AccordionDetails } from './CustomAccordion';
 import DirentConfiguration from './DirentConfiguration';
 import Album from './Album';
-const PhotoManager = ({setTriggerRefresh, galleryRef, directory}) => {
+const PhotoManager = ({setTriggerRefresh, galleryRef, directory, sections}) => {
     const [expanded, setExpanded] = useState(false);
     const [openNewDirentModal, setOpenNewDirentModal] = useState(false);
     const [openEditDirentModal, setOpenEditDirentModal] = useState(false);
@@ -12,17 +12,18 @@ const PhotoManager = ({setTriggerRefresh, galleryRef, directory}) => {
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
     }
-    const handleClick = (event, photo, edit=true) => {
+    const handleClick = (event, dirent, edit=true) => {
         // open link in new tab
         event.stopPropagation();
-        setCurrentDirent(photo);
+        console.log(dirent);
+        setCurrentDirent(dirent);
         if(edit) setOpenEditDirentModal(true);
         else setOpenNewDirentModal(true);
     }
     return (
         <div ref={galleryRef} className='flex flex-col justify-center items-center'>
-            <DirentConfiguration setTriggerRefresh={setTriggerRefresh} newDirent={true} currentDirent={currentDirent} openModal={openNewDirentModal} setOpenModal={setOpenNewDirentModal} />
-            <DirentConfiguration setTriggerRefresh={setTriggerRefresh} newDirent={false} currentDirent={currentDirent} openModal={openEditDirentModal} setOpenModal={setOpenEditDirentModal} />
+            {openNewDirentModal && <DirentConfiguration setTriggerRefresh={setTriggerRefresh} newDirent={true} currentDirent={currentDirent} openModal={openNewDirentModal} setOpenModal={setOpenNewDirentModal} />}
+            {openEditDirentModal && <DirentConfiguration setTriggerRefresh={setTriggerRefresh} newDirent={false} currentDirent={currentDirent} openModal={openEditDirentModal} setOpenModal={setOpenEditDirentModal} sections={sections}/>}
             {directory && directory.dirs.map((dirent, index) => {
                 return (
                     <Accordion key={dirent.id} expanded={expanded === dirent.id} onChange={handleChange(dirent.id)}>
@@ -44,7 +45,7 @@ const PhotoManager = ({setTriggerRefresh, galleryRef, directory}) => {
                             </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <PhotoManager key={dirent.id} setTriggerRefresh={setTriggerRefresh} directory={dirent} />
+                            <PhotoManager key={dirent.id} setTriggerRefresh={setTriggerRefresh} directory={dirent} sections={sections}/>
                             <Album photoSet={dirent.photos} handleClick={handleClick} />
                         </AccordionDetails>
                     </Accordion>

@@ -3,12 +3,12 @@ import { useState } from 'react';
 import BasicSelect from './BasicSelect';
 import Dropzone from 'react-dropzone';
 import axios from 'axios';
-const DirentConfiguration = ({ setTriggerRefresh, newDirent, currentDirent, openModal, setOpenModal}) => {
+const DirentConfiguration = ({ setTriggerRefresh, newDirent, currentDirent, openModal, setOpenModal, sections}) => {
     const values = ['Photo', 'Directory'];
-    const [name, setName] = useState('');
+    const [name, setName] = useState(sections ? currentDirent.name : '');
+    const [parent, setParent] = useState(sections ? Object.keys(sections).map((section) => sections[section]).indexOf(currentDirent.parent) : null); // index of the parent in Object.keys(sections) array
     const [type , setType] = useState(0);
     const [filesToUpload, setFilesToUpload] = useState([]);
-
     const handleClose = (refresh=true) => {
         setOpenModal(false);
         setName('');
@@ -74,6 +74,7 @@ const DirentConfiguration = ({ setTriggerRefresh, newDirent, currentDirent, open
     const onEdit = () => {
         const formData = new FormData();
         formData.append('name', name);
+        formData.append('parent', sections[Object.keys(sections)[parent]]);
         axios.put(`https://api.jaydnserrano.com/dirents/${currentDirent.id}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
@@ -177,6 +178,8 @@ const DirentConfiguration = ({ setTriggerRefresh, newDirent, currentDirent, open
                 </p>
                 {/* Name */}
                 <input type="text" placeholder={currentDirent.name} className="w-full border-2 border-gray-300 rounded-md p-2 my-2" value={name} onChange={(e) => setName(e.currentTarget.value)}/>
+                {/* Basic Select for parent */}
+                {currentDirent.isDir === 0 && <BasicSelect label="Parent" values={Object.keys(sections)} val={parent} setVal={setParent} />}
                 {/* Delete button */}
                 <button className="bg-red-500 text-white rounded-md p-2 w-fit hover:bg-red-600" onClick={onDelete}>Delete</button>
                 {/* Submit Button */}
