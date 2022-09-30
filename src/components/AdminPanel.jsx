@@ -11,15 +11,16 @@ const AdminPanel = () => {
         const refresh = async () => {
             setDirents(null);
             const res = await axios.get('https://api.jaydnserrano.com/database');
-            if(res.data.success) {
+            // if 200 OK
+            if (res.status === 200) {
                 axios('https://api.jaydnserrano.com/dirents')
                 .then(res => {
-                    if(res.data.success){
+                    if(res.status === 200) {
                         //add 'name': 'root' to the root directory
-                        let dirs = res.data.dirents;
-                        dirs.name = 'root';
-                        dirs.id = '-1';
-                        setDirents(res.data.dirents);
+                        if(res.data['folders'][0]['name'] === 'root') setDirents(res.data['folders'][0]);
+                        else{
+                            alert('Error: root folder not found');
+                        }
                     }
                     else alert("Error fetching dirents: " + res.data.response);
                     setTriggerRefresh(false);

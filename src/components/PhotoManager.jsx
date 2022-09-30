@@ -17,9 +17,9 @@ const PhotoManager = ({setTriggerRefresh, galleryRef, directory}) => {
             <DirentConfiguration setTriggerRefresh={setTriggerRefresh} newDirent={true} currentDirent={currentDirent} openModal={openNewDirentModal} setOpenModal={setOpenNewDirentModal}/>
             <DirentConfiguration  setTriggerRefresh={setTriggerRefresh} newDirent={false} currentDirent={currentDirent} openModal={openEditDirentModal} setOpenModal={setOpenEditDirentModal} />
             {/* Create an accordion for each section in directory */}
-            {directory && directory.dirs.map((section) => {
+            {directory && directory.folders.map((section) => {
                 return (
-                    <Accordion id={section.id} expanded={expanded === section.id} key={section.id} onChange={handleChange(section.id)}>
+                    <Accordion id={section.name} expanded={expanded === section.name} key={section.name} onChange={handleChange(section.name)}>
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
                             aria-controls={`${section.name}-content`}
@@ -52,7 +52,7 @@ const PhotoManager = ({setTriggerRefresh, galleryRef, directory}) => {
                                         E
                                         </button></div>
                                     </span> 
-                                    <span className="text-slate-500">{section.photos.length+ ' photos | ' + section.dirs.length + ' subcategories'}</span>
+                                    <span className="text-slate-500">{section.photos.length+ ' photos | ' + section.folders.length + ' subcategories'}</span>
                                 </div>
                             </Typography>
                         </AccordionSummary>

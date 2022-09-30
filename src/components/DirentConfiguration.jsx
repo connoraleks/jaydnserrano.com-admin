@@ -2,7 +2,7 @@ import Modal from '@mui/material/Modal';
 import { useState } from 'react';
 import BasicSelect from './BasicSelect';
 import Dropzone from 'react-dropzone';
-import axios from 'axios';
+//import axios from 'axios';
 const DirentConfiguration = ({ setTriggerRefresh, newDirent, currentDirent, openModal, setOpenModal}) => {
     const values = ['Photo', 'Directory'];
     const [name, setName] = useState('');
@@ -22,92 +22,14 @@ const DirentConfiguration = ({ setTriggerRefresh, newDirent, currentDirent, open
         </button>
     )
     const onUpload = () => {
-        // If photo, upload photos to api.jaydnserrano.com/dirents
-        if (type === 0) {
-            filesToUpload.forEach(file => {
-                const formData = new FormData();
-                formData.append('file', file);
-                formData.append('name', file.name);
-                formData.append('type', type);
-                formData.append('parent', currentDirent.id);
-                axios.post('https://api.jaydnserrano.com/dirents', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                }).then(res => {
-                    if(res.data.success) {
-                        console.log(res);
-                        handleClose();
-                    }
-                    else{
-                        alert("Error uploading photo: " + res.data.response);
-                    }
-                }).catch(err => {
-                    alert("FATAL Error uploading photo: " + err);
-                });
-            });
-        }
-        // If directory, upload directory to api.jaydnserrano.com/dirents
-        else {
-            const formData = new FormData();
-            formData.append('name', name);
-            formData.append('type', type);
-            formData.append('parent', currentDirent.id);
-            axios.post('https://api.jaydnserrano.com/dirents', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            }).then(res => {
-                if(res.data.success) {
-                    console.log(res);
-                    handleClose();
-                }
-                else{
-                    alert("Error creating dirent: " + res.data.response);
-                }
-            }).catch(err => {
-                alert("FATAL Error editing dirent: " + err);
-            });
-        }
     }
     const onEdit = () => {
-        const formData = new FormData();
-        formData.append('name', name);
-        axios.put(`https://api.jaydnserrano.com/dirents/${currentDirent.id}`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        }).then(res => {
-            if(res.data.success) {
-                console.log(res);
-                handleClose();
-            }
-            else {
-                alert("Error editing dirent: " + res.data.response);
-            }
-        }).catch(err => {
-            alert('FATAL Error editing dirent:' +err);
-        });
     }
     const onDrop = (acceptedFiles) => {
         console.log(acceptedFiles);
         setFilesToUpload([...filesToUpload, ...acceptedFiles]);
     }
     const onDelete = () => {
-        axios.delete(`https://api.jaydnserrano.com/dirents/${currentDirent.id}`)
-        .then(res => {
-            if(res.data.success) {
-                console.log(res);
-                handleClose();
-            }
-            else {
-                alert("Error deleting dirent: " + res.data.response);
-            }
-        })
-        .catch(err => {
-            alert("FATAL Error deleting dirent: " + err);
-        });
-        handleClose();
     }
     return (
         <>
