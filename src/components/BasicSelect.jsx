@@ -22,7 +22,7 @@ const BasicSelect = ({label, values, val, setVal}) => {
         >
             {values.map((value, index) => {
                 return (
-                    <MenuItem value={index}>{value}</MenuItem>
+                    <MenuItem key={index} value={index}>{value}</MenuItem>
                 )
                 })}
         </Select>
