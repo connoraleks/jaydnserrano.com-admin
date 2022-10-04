@@ -5,7 +5,7 @@ import { Accordion, AccordionSummary, AccordionDetails } from './CustomAccordion
 import Album from './Album';
 import {AiOutlineLoading3Quarters} from 'react-icons/ai';
 import axios from 'axios';
-const PhotoManager = ({setOpenEditBox, id}) => {
+const PhotoManager = ({setEditDirent, id}) => {
     const [expanded, setExpanded] = useState(false);
     const [dirent, setDirent] = useState(null);
     useEffect(() => {
@@ -18,7 +18,7 @@ const PhotoManager = ({setOpenEditBox, id}) => {
         getDirent();
     }, [id]);
     return (
-        <div className='w-full h-full flex flex-col gap-4'>
+        <div className={dirent ? 'w-full h-full flex flex-col gap-4 p-4' : 'w-full h-full flex justify-center items-center text-white'}>
             {dirent ? (
                 dirent.dirs.map((dir) => {
                     // dirent.dirs = [{id: 1, name: 'test'}, {id: 2, name: 'test2'}]
@@ -26,10 +26,18 @@ const PhotoManager = ({setOpenEditBox, id}) => {
                         <Accordion key={dir.id} expanded={expanded === dir.id} onChange={() => setExpanded(expanded === dir.id ? false : dir.id)}>
                             <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
                                 <Typography>{dir.name}</Typography>
+                                {/* Edit Button*/}
+                                <button className='ml-auto' onClick={(event) => {
+                                    event.stopPropagation();
+                                    setEditDirent(dir);
+                                    }}>Edit</button>
                             </AccordionSummary>
                             <AccordionDetails>
-                                <PhotoManager setOpenEditBox={setOpenEditBox} id={dir.id}/>
-                                {dir.photos.length > 0 ? <Album photoSet={dir.photos} handleClick={(event, photo, index) => setOpenEditBox((photo))}/> : <p className='p-4'>No photos in this directory</p>}
+                                {dir.dirs.length> 0 && <PhotoManager setEditDirent={setEditDirent} id={dir.id}/>}
+                                {dir.photos.length > 0 ? <Album photoSet={dir.photos} handleClick={(event, photo, index) => {
+                                    event.stopPropagation();
+                                    setEditDirent(photo);
+                                    }}/> : <p className='p-4'>No photos in this directory</p>}
                             </AccordionDetails>
                         </Accordion>
                     );

@@ -8,6 +8,7 @@ const Accordion = styled((props) => (
     ))(({ theme }) => ({
     boxShadow: 'none',
     backgroundColor: '#1f2937',
+    borderRadius: '1rem',
     width: '100%',
     minHeight: 'fit-content',
     maxHeight: 'full',
@@ -22,6 +23,7 @@ const Accordion = styled((props) => (
     />
     ))(({ theme }) => ({
     backgroundColor: '#1f2937',
+    borderRadius: '1rem',
     color: 'white',
     fill: 'white',
     flexDirection: 'row-reverse',
@@ -37,6 +39,7 @@ const Accordion = styled((props) => (
     }));
     const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
         padding: theme.spacing(2),
+        borderRadius: '1rem',
         borderTop: '1px solid rgba(0, 0, 0, .125)',
         '&::-webkit-scrollbar': {
             display: 'none',

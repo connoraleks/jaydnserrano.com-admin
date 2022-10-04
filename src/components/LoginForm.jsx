@@ -12,14 +12,12 @@ const LoginForm = ({setIsLoggedIn}) => {
         //send form to api
         axios.post(api, form)
         .then(res => {
-            console.log(res.data);
             if(res.data.success) setIsLoggedIn(true);
             else {
                 alert('Login Failed');
             }
             return res.data;
         }).catch(err => {
-            console.log(err);
             return false
         })
     }

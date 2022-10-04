@@ -4,29 +4,23 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-const BasicSelect = ({label, values, val, setVal}) => {
-
-  const handleChange = (event) => {
-    setVal(event.target.value);
-  };
+const BasicSelect = ({label, values, val, onChange}) => {
   return (
-    <Box sx={{ minWidth: 120, maxWidth: 'fit-content' }}>
-      <FormControl fullWidth>
+    <Box sx={{ minWidth: 120 }}>
+      {values.length > 0 && <FormControl fullWidth>
         <InputLabel id="demo-simple-select-label">{label}</InputLabel>
         <Select
-          labelId="demo-simple-select-label"
+          labelid="demo-simple-select-label"
           id="demo-simple-select"
-          value={val}
+          value={values.findIndex((value) => value.id === val)}
           label={label}
-          onChange={handleChange}
+          onChange={onChange}
         >
-            {values.map((value, index) => {
-                return (
-                    <MenuItem key={index} value={index}>{value}</MenuItem>
-                )
-                })}
+          {values.map((value,index) => {
+            return <MenuItem key={index} value={index}>{value.name}</MenuItem>
+          })}
         </Select>
-      </FormControl>
+      </FormControl>}
     </Box>
   );
 }

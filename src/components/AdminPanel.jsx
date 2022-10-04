@@ -1,41 +1,31 @@
 import Navbar from "./Navbar";
 import PhotoManager from "./PhotoManager";
-import { useState, useEffect, useRef } from 'react';
+import EditBox from "./EditBox";
+import { useState, useEffect } from 'react';
 const AdminPanel = () => {
     const [triggerRefresh, setTriggerRefresh] = useState(false);
-    const [openEditBox, setOpenEditBox] = useState(false);
+    const [editDirent, setEditDirent] = useState(false);
     useEffect(() => {
         if(triggerRefresh) {
             console.log('refreshing');
             setTriggerRefresh(false);
+        } else {
+            console.log('not refreshing');
         }
     }, [triggerRefresh]);
-    useEffect(() => {
-        console.log(openEditBox);
-        editBox.current.style.display = openEditBox ? 'flex' : 'none';
-    }, [openEditBox]);
-    const editBox = useRef(null);
     return (
-        <div id='AdminPanel' className="h-full w-full mt-20 z-0">
+        <div id='AdminPanel' className="h-full w-full mt-20 z-0 p-4 md:p-16">
             <Navbar setTriggerRefresh={setTriggerRefresh}/>
             {/* Button that get requests api.jaydnserrano.com/database */}
-            <main className='w-full h-full p-4 flex justify-center items-center'>
-                <div className='w-fit h-fit border rounded-lg border-gray-600 p-4'>
-                    <PhotoManager setOpenEditBox={setOpenEditBox} id={"root"}/>
+            <main className='w-full h-full p-4 flex justify-center items-center border border-white rounded-2xl bg-white bg-opacity-60'>
+                <div className='w-full h-full p-4 flex flex-col justify-center items-center gap-4 text-black'>
+                    <h1 className='text-4xl font-bold mb-8'>Content Manager</h1>
+                    <PhotoManager setEditDirent={setEditDirent} id={"root"}/>
                 </div>
             </main>
-            <div ref={editBox} className='absolute w-screen h-screen bg-transparent backdrop-blur-2xl top-0 flex flex-col justify-center items-center z-50 p-4'>
-                <button className="absolute top-0 right-0 text-white mr-4 mt-4" onClick={() => {
-                    setOpenEditBox(false);
-                }}>X</button>
-                <div className='w-fit h-fit border rounded-lg border-gray-300 p-4 text-white'>
-                    <h1>{openEditBox ? openEditBox.name : null}</h1>
-                    <p>Photo ID: {openEditBox ? openEditBox.id : null}</p>
-                    <p>Photo URL: {openEditBox ? openEditBox.src : null}</p>
-                    <p>Width: {openEditBox ? openEditBox.width : null} , Height: {openEditBox ? openEditBox.height : null}</p>
-                    <p>Last Updated: {openEditBox ? openEditBox.created_at : null}</p>
-                </div>
-            </div>
+            {editDirent && <EditBox setEditDirent={setEditDirent} dirent={editDirent} onEdit={(dirent, name, parent) => {
+                console.log(dirent, name, parent);
+            }}/>}
         </div>
     );
 }
