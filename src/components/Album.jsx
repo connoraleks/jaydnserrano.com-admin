@@ -41,6 +41,7 @@ const PhotoFrame = memo(
                 {...listeners}
             >
                 <img
+                    loading='lazy'
                     alt={alt}
                     style={{
                         ...style,

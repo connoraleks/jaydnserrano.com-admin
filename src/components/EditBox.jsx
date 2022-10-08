@@ -12,7 +12,18 @@ const EditBox = ({ dirent, onEdit, setEditDirent }) => {
     const [dirs, setDirs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [imgLoading, setImgLoading] = useState(false);
-
+    const onEditSubmit = (e) => {
+        e.preventDefault();
+        if (name === '') {
+            alert('Name cannot be empty');
+            return;
+        }
+        if (dirent.isDir === 0 && extension === '') {
+            alert('Extension cannot be empty');
+            return;
+        }
+        onEdit({ ...dirent, name: name + (dirent.isDir === 0 ? '.' + extension : ''), parent: parent });
+    }
     useEffect(() => {
         setLoading(true);
         if(dirent.isDir === 0) setImgLoading(true);
@@ -82,9 +93,7 @@ const EditBox = ({ dirent, onEdit, setEditDirent }) => {
                     }}/> : <p>Loading...</p>}
                 </div>
                 {/* Submit Edit */}
-                <button className='w-full h-12 bg-black text-white' onClick={() => {
-                    onEdit(dirent, name, parent);
-                }}>Edit</button>
+                <button className='w-full h-12 bg-black text-white' onClick={onEditSubmit}>Edit</button>
             </div>
         </div> : 
         <div className='w-full h-full flex justify-center items-center'>

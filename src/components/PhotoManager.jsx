@@ -25,12 +25,13 @@ const PhotoManager = ({setEditDirent, id}) => {
                     return (
                         <Accordion key={dir.id} expanded={expanded === dir.id} onChange={() => setExpanded(expanded === dir.id ? false : dir.id)}>
                             <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
-                                <Typography>{dir.name}</Typography>
-                                {/* Edit Button*/}
-                                <button className='ml-auto' onClick={(event) => {
-                                    event.stopPropagation();
-                                    setEditDirent(dir);
-                                    }}>Edit</button>
+                                <Typography className='flex justify-between items-center w-full'>
+                                    <span className='flex justify-start items-center text-2xl'>{dir.name}</span>
+                                    <button className="border-2 p-2 border-white rounded-full w-8 h-8 flex justify-center items-center" onClick={(event) => {
+                                        event.stopPropagation();
+                                        setEditDirent(dir);
+                                    }}>E</button>
+                                </Typography>
                             </AccordionSummary>
                             <AccordionDetails>
                                 {dir.dirs.length> 0 && <PhotoManager setEditDirent={setEditDirent} id={dir.id}/>}
