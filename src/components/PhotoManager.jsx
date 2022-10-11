@@ -5,7 +5,7 @@ import { Accordion, AccordionSummary, AccordionDetails } from './CustomAccordion
 import Album from './Album';
 import {AiOutlineLoading3Quarters} from 'react-icons/ai';
 import axios from 'axios';
-const PhotoManager = ({setEditDirent, id}) => {
+const PhotoManager = ({setNewDirent, setEditDirent, id}) => {
     const [expanded, setExpanded] = useState(false);
     const [dirent, setDirent] = useState(null);
     useEffect(() => {
@@ -20,7 +20,8 @@ const PhotoManager = ({setEditDirent, id}) => {
     return (
         <div className={dirent ? 'w-full h-full flex flex-col gap-4 p-4' : 'w-full h-full flex justify-center items-center text-white'}>
             {dirent ? (
-                dirent.dirs.map((dir) => {
+                <>
+                {dirent.dirs.map((dir) => {
                     // dirent.dirs = [{id: 1, name: 'test'}, {id: 2, name: 'test2'}]
                     return (
                         <Accordion key={dir.id} expanded={expanded === dir.id} onChange={() => setExpanded(expanded === dir.id ? false : dir.id)}>
@@ -42,7 +43,9 @@ const PhotoManager = ({setEditDirent, id}) => {
                             </AccordionDetails>
                         </Accordion>
                     );
-                })
+                })}
+                {setNewDirent && <div className='w-full flex justify-center items-center'><button className='border-2 border-white p-2 rounded-full w-8 h-8 flex justify-center items-center hover:bg-gray-800' onClick={() => setNewDirent(true)}>+</button></div>}
+                </>
             ) : (
                 <div className='w-full h-full flex justify-center items-center'>
                     <AiOutlineLoading3Quarters className='animate-spin text-6xl'/>
