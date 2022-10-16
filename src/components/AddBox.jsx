@@ -1,26 +1,40 @@
 import {useEffect, useRef, useState} from 'react';
 import {VscFolderOpened} from 'react-icons/vsc';
+import { MdAddAPhoto } from 'react-icons/md';
 import BasicSelect from './BasicSelect';
 import Box from '@mui/material/Box';
 import Dropzone from 'react-dropzone';
 import { FormControl, TextField, ToggleButton, ToggleButtonGroup, Button } from '@mui/material';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
+import ImageIcon from '@mui/icons-material/Image';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 const AddBox = ({ onAdd, setNewDirent }) => {
     const AddBoxRef = useRef(null);
     const [name, setName] = useState('');
     const [parent, setParent] = useState(-1);
-    const [type, setType] = useState(0);
+    const [type, setType] = useState(1);
     const [dirs, setDirs] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [imgLoading, setImgLoading] = useState(false);
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const onSubmit = (e) => {
         e.preventDefault();
-        const newDirent = {
-            name: name,
-            parent: parent,
-        };
-        onAdd(newDirent);
+        if(type === 0 && uploadedFiles.length === 0) {
+            alert('Please upload at least one file');
+            return;
+        }
+        if (type === 1 && name === '') {
+            alert('Name cannot be empty');
+            return;
+        }
+        onAdd({ name: name, parent: parent, isDir: type, files: uploadedFiles });
         setNewDirent(null);
     }
     useEffect(() => {
@@ -29,12 +43,19 @@ const AddBox = ({ onAdd, setNewDirent }) => {
             const res = await fetch('https://api.jaydnserrano.com/dirents/dirs');
             if(res.status === 200) {
                 const data = await res.json();
-                setDirs(data);
+                if(type === 0) {
+                    let temp = data.filter(dirent => Number(dirent.id) !== -1);
+                    setParent(temp[0].id);
+                    setDirs(temp);
+                } else {
+                    setParent(-1);
+                    setDirs(data);
+                }
             }
             setLoading(false);
         }
         getDirs();
-    }, []);
+    }, [type]);
 
     return (
     <div ref={AddBoxRef} className='fixed z-50 w-screen h-screen max-h-screen top-0 left-0 right-0 bottom-0 p-4 flex justify-center items-center backdrop-blur-2xl text-white'>
@@ -44,12 +65,10 @@ const AddBox = ({ onAdd, setNewDirent }) => {
             <button className="absolute top-0 right-0 mr-4 mt-4 text-black" onClick={() => {setNewDirent(false);}}>X</button>
             {/* Image */}
             <div className='w-1/3 lg:w-full lg:max-w-screen-sm h-full text-black'>
-                {!loading ? 
                 <div className='overflow-hidden flex justify-center items-center'>
-                    {parent.isDir === 0 ? <img className={imgLoading ? 'hidden': 'border border-black rounded-xl'} src={parent.src} alt={parent.name} onLoad={() => setImgLoading(false)}/> : <VscFolderOpened className='w-full h-full'/>}
-                    {imgLoading && <div className='w-full h-full flex justify-center items-center'><AiOutlineLoading3Quarters className='animate-spin text-4xl'/></div>}
-                </div> :
-                <div className='w-full h-full flex justify-center items-center'><AiOutlineLoading3Quarters className='animate-spin text-4xl'/></div>}
+                    {type === 1 &&  <VscFolderOpened className='w-full h-full'/>}
+                    {type === 0 && <MdAddAPhoto className='w-full h-full'/>}
+                </div>
             </div>
             {/* Add Form */}
             <div className='w-full h-full flex flex-col gap-4'>
@@ -61,10 +80,10 @@ const AddBox = ({ onAdd, setNewDirent }) => {
                                 setUploadedFiles([]);
                                 setType(newType);
                             }}>
-                                <ToggleButton value={0} aria-label="left aligned" sx={{width: '50%'}}>
+                                <ToggleButton value={1} aria-label="left aligned" sx={{width: '50%'}}>
                                     Directory
                                 </ToggleButton>
-                                <ToggleButton value={1} aria-label="centered" sx={{width: '50%'}}>
+                                <ToggleButton value={0} aria-label="centered" sx={{width: '50%'}}>
                                     Photo
                                 </ToggleButton>
                             </ToggleButtonGroup>
@@ -72,7 +91,7 @@ const AddBox = ({ onAdd, setNewDirent }) => {
                     </Box>
                 </div>
                 {/* Name */}
-                {type === 0 && <div className='flex flex-col gap-2'>
+                {type === 1 && <div className='flex flex-col gap-2'>
                     <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth>
                             <TextField
@@ -93,18 +112,7 @@ const AddBox = ({ onAdd, setNewDirent }) => {
                     }}/> : <p>Loading...</p>}
                 </div>
                 {/* drag and drop upload box for photos styled using mui Button */}
-                {type === 1 && <div className='w-full flex flex-col gap-4'>
-                    {/* Display names of files inside a non editable TextField to match the style */}
-                    <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth>
-                            <TextField
-                                id="demo-simple-name"
-                                value={uploadedFiles.map((file) => file.name).join(',')}
-                                label={'Uploaded Files'}
-                                disabled
-                            />
-                        </FormControl>
-                    </Box>
+                {type === 0 && <div className='w-full flex flex-col gap-4'>
                     {/* Dropzone */}
                     <Dropzone onDrop={(acceptedFiles) => {
                         acceptedFiles.forEach((file) => {
@@ -125,21 +133,42 @@ const AddBox = ({ onAdd, setNewDirent }) => {
                     }}>
                         {({getRootProps, getInputProps}) => (
                         <Box sx={{ minWidth: 120 }}>
-                            <FormControl fullWidth>
-                                <TextField
-                                    id="demo-simple-name"
-                                    label={'Drag and Drop Files Here'}
-                                    disabled
-                                    {...getRootProps()}
-                                />
-                                <input {...getInputProps()} accept="image/*, directory/*" />
-                            </FormControl>
+                            {/* Drag and drop box */}
+                            <div {...getRootProps()} className='w-full h-40 flex flex-col justify-center items-center border-2 border-dashed border-[#0000001a] rounded-2xl text-black overflow-hidden'>
+                                <input {...getInputProps()} />
+                                <h3 className='text-md font-semibold p-4'>Drag and drop files here</h3>
+                                {uploadedFiles.length > 0 && <List sx={{ width: '100%',height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'start', overflowY: 'scroll',borderTop: '1px solid #0000001a', padding: '0px 8px' }}>
+                                    {uploadedFiles.map((file, index) => (
+                                        <ListItem 
+                                            key={index}
+                                            sx={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+                                        >
+                                            <ListItemAvatar>
+                                                <Avatar>
+                                                    <ImageIcon />
+                                                </Avatar>
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                                primary={file.name}
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <IconButton edge="end" aria-label="delete" onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setUploadedFiles((prev) => prev.filter((f) => f.name !== file.name));
+                                                }}>
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </ListItemSecondaryAction>
+                                        </ListItem>
+                                    ))}
+                                </List>}
+                            </div>
                         </Box>
                         )}
 
                     </Dropzone>
                 </div>}
-                {/* Submit Dirent */}
+                {/* Submit Dirent Button */}
                 <div className='w-full'>
                     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                         <FormControl sx={{ m: 1, width: '100%' }}>

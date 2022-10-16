@@ -2,9 +2,9 @@ import {useEffect, useRef, useState} from 'react';
 import {VscFolderOpened} from 'react-icons/vsc';
 import BasicSelect from './BasicSelect';
 import Box from '@mui/material/Box';
-import { FormControl, TextField } from '@mui/material';
+import { Button, FormControl, TextField } from '@mui/material';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
-const EditBox = ({ dirent, onEdit, setEditDirent }) => {
+const EditBox = ({ dirent, setEditDirent, onEdit, onDelete }) => {
     const editBoxRef = useRef(null);
     const [name, setName] = useState(dirent.name.split('.')[0]);
     const [extension, setExtension] = useState(dirent.name.split('.')[1]);
@@ -12,6 +12,7 @@ const EditBox = ({ dirent, onEdit, setEditDirent }) => {
     const [dirs, setDirs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [imgLoading, setImgLoading] = useState(false);
+    const [deleteConfirmation, setDeleteConfirmation] = useState(false);
     const onEditSubmit = (e) => {
         e.preventDefault();
         if (name === '') {
@@ -92,8 +93,18 @@ const EditBox = ({ dirent, onEdit, setEditDirent }) => {
                         setParent(dirs[event.target.value].id);
                     }}/> : <p>Loading...</p>}
                 </div>
+                {/* Delete Dirent Button */}
+                <Button variant="contained" color="error" onClick={() => {setDeleteConfirmation(true)}}>Delete</Button>
+                {deleteConfirmation && <div className='flex flex-col gap-2'>
+                    <p>Are you sure you want to delete this {dirent.isDir === 0 ? 'file' : 'directory'}?</p>
+                    <div className='flex gap-2'>
+                        <Button variant="contained" color="error" onClick={() => {onDelete(dirent); setDeleteConfirmation(false);}}>Yes</Button>
+                        <Button variant="contained" color="success" onClick={() => {setDeleteConfirmation(false);}}>No</Button>
+                    </div>
+                </div>}
+                
                 {/* Submit Edit */}
-                <button className='w-full h-12 bg-black text-white' onClick={onEditSubmit}>Edit</button>
+                <Button variant="contained" onClick={onEditSubmit} >Submit Edit</Button>
             </div>
         </div> : 
         <div className='w-full h-full flex justify-center items-center'>

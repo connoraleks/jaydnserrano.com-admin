@@ -18,45 +18,89 @@ const AdminPanel = () => {
             {/* Button that get requests api.jaydnserrano.com/database */}
             <main className='w-full h-full p-4 flex justify-center items-center'>
                 <div className='w-full h-full p-4 flex flex-col justify-center items-center gap-4 text-white'>
-                    <h1 className='text-4xl font-bold mb-8'>Content Manager</h1>
+                    <h1 className='text-4xl font-bold mb-8 text-center'>Content Manager</h1>
                     {!triggerRefresh && <PhotoManager setNewDirent={setNewDirent} setEditDirent={setEditDirent} id={"root"}/>}
                 </div>
             </main>
-            {editDirent && <EditBox setEditDirent={setEditDirent} dirent={editDirent} onEdit={(dirent) => {
+            {editDirent && 
+            <EditBox 
+                setEditDirent={setEditDirent} 
+                dirent={editDirent} 
+                onEdit={(dirent) => {
                 const formData = new FormData();
-                formData.append('name', dirent.name);
-                formData.append('parent', dirent.parent);
-                formData.append('action', 'edit');
-                axios.post(`https://api.jaydnserrano.com/dirents/${dirent.id}`, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
+                    formData.append('name', dirent.name);
+                    formData.append('parent', dirent.parent);
+                    formData.append('action', 'edit');
+                    axios.post(`https://api.jaydnserrano.com/dirents/${dirent.id}`, formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    })
+                    .then(res => {
+                        console.log(res);
+                        setTriggerRefresh(true);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+                }}
+                onDelete={(dirent) => {
+                    axios.delete(`https://api.jaydnserrano.com/dirents/${dirent.id}`)
+                    .then(res => {
+                        console.log(res);
+                        setTriggerRefresh(true);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+                }}
+            />
+            }
+            { newDirent && 
+            <AddBox 
+                setNewDirent={setNewDirent} 
+                onAdd={(dirent) => {
+                    console.log(dirent);
+                    if(dirent.isDir === 1) {
+                        const formData = new FormData();
+                        formData.append('name', dirent.name);
+                        formData.append('parent', dirent.parent);
+                        formData.append('isDir', dirent.isDir);
+                        formData.append('action', 'add');
+                        axios.post(`https://api.jaydnserrano.com/dirents`, formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        })
+                        .then(res => {
+                            console.log(res);
+                            setTriggerRefresh(true);
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        })
+                    } else if(dirent.isDir === 0) {
+                        for(let x = 0; x < dirent.files.length; x++) {
+                            const formData = new FormData();
+                            formData.append('name', dirent.files[x].name);
+                            formData.append('parent', dirent.parent);
+                            formData.append('isDir', dirent.isDir);
+                            formData.append('file', dirent.files[x]);
+                            formData.append('action', 'add');
+                            axios.post(`https://api.jaydnserrano.com/dirents`, formData, {
+                                headers: {
+                                    'Content-Type': 'multipart/form-data'
+                                }
+                            })
+                            .then(res => {
+                                console.log(res);
+                            })
+                            .catch(err => {
+                                console.log(err);
+                            })
+                        }
+                        setTriggerRefresh(true);
                     }
-                })
-                .then(res => {
-                    console.log(res);
-                    setTriggerRefresh(true);
-                })
-                .catch(err => {
-                    console.log(err);
-                })
-            }}/>}
-            { newDirent && <AddBox setNewDirent={setNewDirent} onAdd={(dirent) => {
-                const formData = new FormData();
-                formData.append('name', dirent.name);
-                formData.append('parent', dirent.parent);
-                formData.append('action', 'add');
-                axios.post(`https://api.jaydnserrano.com/dirents/${dirent.id}`, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                })
-                .then(res => {
-                    console.log(res);
-                    setTriggerRefresh(true);
-                })
-                .catch(err => {
-                    console.log(err);
-                })
             }}/>}
         </div>
     );
