@@ -57,51 +57,7 @@ const AdminPanel = () => {
             />
             }
             { newDirent && 
-            <AddBox 
-                setNewDirent={setNewDirent} 
-                onAdd={(dirent) => {
-                    console.log(dirent);
-                    if(dirent.isDir === 1) {
-                        const formData = new FormData();
-                        formData.append('name', dirent.name);
-                        formData.append('parent', dirent.parent);
-                        formData.append('isDir', dirent.isDir);
-                        formData.append('action', 'add');
-                        axios.post(`https://api.jaydnserrano.com/dirents`, formData, {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
-                            }
-                        })
-                        .then(res => {
-                            console.log(res);
-                            setTriggerRefresh(true);
-                        })
-                        .catch(err => {
-                            console.log(err);
-                        })
-                    } else if(dirent.isDir === 0) {
-                        for(let x = 0; x < dirent.files.length; x++) {
-                            const formData = new FormData();
-                            formData.append('name', dirent.files[x].name);
-                            formData.append('parent', dirent.parent);
-                            formData.append('isDir', dirent.isDir);
-                            formData.append('file', dirent.files[x]);
-                            formData.append('action', 'add');
-                            axios.post(`https://api.jaydnserrano.com/dirents`, formData, {
-                                headers: {
-                                    'Content-Type': 'multipart/form-data'
-                                }
-                            })
-                            .then(res => {
-                                console.log(res);
-                            })
-                            .catch(err => {
-                                console.log(err);
-                            })
-                        }
-                        setTriggerRefresh(true);
-                    }
-            }}/>}
+            <AddBox setNewDirent={setNewDirent} setTriggerRefresh={setTriggerRefresh} />}
         </div>
     );
 }

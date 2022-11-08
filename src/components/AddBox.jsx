@@ -15,8 +15,9 @@ import Avatar from '@mui/material/Avatar';
 import ImageIcon from '@mui/icons-material/Image';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
+import axios from 'axios';
 
-const AddBox = ({ onAdd, setNewDirent }) => {
+const AddBox = ({ setNewDirent, setTriggerRefresh }) => {
     const AddBoxRef = useRef(null);
     const [name, setName] = useState('');
     const [parent, setParent] = useState(-1);
@@ -24,6 +25,52 @@ const AddBox = ({ onAdd, setNewDirent }) => {
     const [dirs, setDirs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [uploadedFiles, setUploadedFiles] = useState([]);
+    const onAdd = (dirent) => {
+        console.log(dirent);
+        if(dirent.isDir === 1) {
+            const formData = new FormData();
+            formData.append('name', dirent.name);
+            formData.append('parent', dirent.parent);
+            formData.append('isDir', dirent.isDir);
+            formData.append('action', 'add');
+            axios.post(`https://api.jaydnserrano.com/dirents`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+            .then(res => {
+                console.log(res);
+                setTriggerRefresh(true);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+        } else if(dirent.isDir === 0) {
+            // For each file, create a new form data and append the file to it so the backend can access it at request.files['file']
+            dirent.files.forEach(file => {
+                const formData = new FormData();
+                formData.append('name', dirent.name);
+                formData.append('parent', dirent.parent);
+                formData.append('isDir', dirent.isDir);
+                formData.append('action', 'add');
+                formData.append('file', file);
+                console.log('File: ' + file + ' | Name: ' + dirent.name + ' | Parent: ' + dirent.parent + ' | isDir: ' + dirent.isDir);
+                // account for cors issues
+                axios.post(`https://api.jaydnserrano.com/dirents`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
+                .then(res => {
+                    console.log(res);
+                    setTriggerRefresh(true);
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+            })
+        }
+    }
     const onSubmit = (e) => {
         e.preventDefault();
         if(type === 0 && uploadedFiles.length === 0) {
@@ -115,27 +162,18 @@ const AddBox = ({ onAdd, setNewDirent }) => {
                 {type === 0 && <div className='w-full flex flex-col gap-4'>
                     {/* Dropzone */}
                     <Dropzone onDrop={(acceptedFiles) => {
-                        acceptedFiles.forEach((file) => {
-                            const reader = new FileReader();
-                            reader.onabort = () => console.log('file reading was aborted');
-                            reader.onerror = () => console.log('file reading has failed');
-                            reader.onload = () => {
-                                const binaryStr = reader.result;
-                                const newFile = {
-                                    name: file.name,
-                                    src: binaryStr,
-                                }
-                                setUploadedFiles((prev) => [...prev, newFile]);
-                            }
-                            reader.readAsDataURL(file);
-                        }
-                        );
+                        // remove all files that are not images
+                        let temp = acceptedFiles.filter(file => file.type.includes('image'));
+                        // remove all files with the same name as the files already uploaded
+                        temp = temp.filter(file => !uploadedFiles.some(uploadedFile => uploadedFile.name === file.name));
+                        // add the new files to the uploadedFiles array
+                        setUploadedFiles([...uploadedFiles, ...temp]);
                     }}>
                         {({getRootProps, getInputProps}) => (
                         <Box sx={{ minWidth: 120 }}>
                             {/* Drag and drop box */}
                             <div {...getRootProps()} className='w-full h-40 flex flex-col justify-center items-center border-2 border-dashed border-[#0000001a] rounded-2xl text-black overflow-hidden'>
-                                <input {...getInputProps()} />
+                                <input {...getInputProps()} name='file' />
                                 <h3 className='text-md font-semibold p-4'>Drag and drop files here</h3>
                                 {uploadedFiles.length > 0 && <List sx={{ width: '100%',height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'start', overflowY: 'scroll',borderTop: '1px solid #0000001a', padding: '0px 8px' }}>
                                     {uploadedFiles.map((file, index) => (
