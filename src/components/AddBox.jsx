@@ -44,6 +44,9 @@ const AddBox = ({ setNewDirent, setTriggerRefresh }) => {
             })
             .catch(err => {
                 console.log(err);
+                if(err.response) {
+                    alert(err.response.data.error);
+                }
             })
         } else if(dirent.isDir === 0) {
             // For each file, create a new form data and append the file to it so the backend can access it at request.files['file']
@@ -82,7 +85,7 @@ const AddBox = ({ setNewDirent, setTriggerRefresh }) => {
             return;
         }
         onAdd({ name: name, parent: parent, isDir: type, files: uploadedFiles });
-        setNewDirent(null);
+        setNewDirent(false);
     }
     useEffect(() => {
         setLoading(true);

@@ -48,6 +48,7 @@ const AdminPanel = () => {
                     axios.delete(`https://api.jaydnserrano.com/dirents/${dirent.id}`)
                     .then(res => {
                         console.log(res);
+                        setEditDirent(false);
                         setTriggerRefresh(true);
                     })
                     .catch(err => {
